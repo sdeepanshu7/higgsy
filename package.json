@@ -25,5 +25,10 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "@google/genai": "^2.17.1",
+    "axios": "^1.19.0",
+    "uuidv4": "^6.2.13"
+  }
 }
