@@ -8,7 +8,7 @@ import fs from "fs";
 import axios from "axios";
 import { createImage } from "./image";
 import {uuid} from "uuidv4";
-
+import { generateVideo } from "./video";
 const app = express();
 
 
@@ -114,7 +114,15 @@ app.get("/api/v1/avatars",(req,res)=>{
     res.json();
 });
 
-app.post("/api/v1/video",(req,res)=>{
+
+//Video
+
+app.post("/api/v1/video",async (req,res)=>{
+  await generateVideo("The video opens with a medium, eye-level shot of a beautiful man with dark hair and warm brown eyes. he wears a magnificent, high-fashion flamingo dress with layers of pink and fuchsia feathers, complemented by whimsical pink, heart-shaped sunglasses. he walks with serene confidence through the crystal-clear, shallow turquoise water of a sun-drenched lagoon. The camera slowly pulls back to a medium-wide shot, revealing the breathtaking scene as the dress's long train glides and floats gracefully on the water's surface behind him. The cinematic, dreamlike atmosphere is enhanced by the vibrant colors of the dress against the serene, minimalist landscape, capturing a moment of pure elegance and high-fashion fantasy.",
+    ["https://randomuser.me/api/portraits/men/75.jpg?utm_source=chatgpt.com",
+      "https://randomuser.me/api/portraits/men/76.jpg?utm_source=chatgpt.com",
+      "https://randomuser.me/api/portraits/men/77.jpg?utm_source=chatgpt.com"
+    ], "./output/video.mp4")
     res.json({});
 });
 
