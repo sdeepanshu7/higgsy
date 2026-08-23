@@ -9,8 +9,10 @@ import axios from "axios";
 import { createImage } from "./image";
 import {uuid} from "uuidv4";
 import { generateVideo } from "./video";
-const app = express();
+import cors from "cors";
 
+const app = express();
+app.use(cors());
 
 app.use(express.json());
 
@@ -37,6 +39,16 @@ app.post("/api/v1/signup",async (req, res)=>{
         id:user.id
     });
 });
+
+app.get("/api/v1/avatar/:avatarId", async (req,res)=>{
+    const avatars = await prisma.avatar.findMany({
+        where : {
+            userId : "1",
+        }
+    })
+    res.json({avatars});
+})
+
 
 //SIGNIN
 
@@ -90,30 +102,75 @@ app.post("/api/v1/avatar", async (req, res) => {
     });
     return;
   }
-  const leftProfileId = uuidv4();
-  const rightProfileId = uuidv4();
-  const frontProfileId = uuidv4();
-  await Promise.all([
-    createImage("create a side profile for the user for the left side. it should be high in quality portfolio to shoot type photo",data.image, `./assests/${leftProfileId}.png`),
-    createImage("create a side profile for the user for the right side. it should be high in quality portfolio to shoot type photo",data.image, `./assests/${rightProfileId}.png`),
-    createImage("create a front profile for the user for the front side. it should be high in quality portfolio to shoot type photo",data.image, `./assests/${frontProfileId}.png`)  
-  ])
 
-  //put in s3 in the db.ts
+  try {
+    // 1. SAVE TO DATABASE
+    const avatar = await prisma.avatar.create({
+      data: {
+        userId: "1",
+        name: data.name,
+      },
+    });
 
-  res.json({
-    message: "Avatar generated successfully",
-  });
+    // 2. SEND RESPONSE IMMEDIATELY
+    res.status(200).json({
+      message: "Avatar created successfully",
+      avatar,
+    });
+
+    // 3. GENERATE IMAGES IN BACKGROUND
+    const leftProfileId = uuidv4();
+    const rightProfileId = uuidv4();
+    const frontProfileId = uuidv4();
+
+    try {
+      await Promise.all([
+        createImage(
+          "Create a high-quality left-side profile of the person. Portfolio-quality photography.",
+          data.image,
+          `./assets/${leftProfileId}.png`
+        ),
+
+        createImage(
+          "Create a high-quality right-side profile of the person. Portfolio-quality photography.",
+          data.image,
+          `./assets/${rightProfileId}.png`
+        ),
+
+        createImage(
+          "Create a high-quality front profile of the person. Portfolio-quality photography.",
+          data.image,
+          `./assets/${frontProfileId}.png`
+        ),
+      ]);
+
+      console.log("Images generated successfully");
+    } catch (error) {
+      console.error("Image generation failed:", error);
+    }
+
+  } catch (error) {
+    console.error("Avatar creation failed:", error);
+
+    res.status(500).json({
+      message: "Failed to create avatar",
+    });
+  }
 });
 
 app.get("/api/v1/avatar/:avatarId",(req,res)=>{
     res.json({});
 });
 
-app.get("/api/v1/avatars",(req,res)=>{
-    res.json();
-});
+app.get("/api/v1/avatars", async (req, res) => {
+    const avatars = await prisma.avatar.findMany({
+        where: {
+            userId: "1",
+        }
+    })
 
+    res.json({avatars});
+});
 
 //Video
 

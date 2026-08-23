@@ -8,6 +8,7 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/cors": "^2.8.19",
     "@types/pg": "^8.21.0",
     "prisma": "^7.9.1"
   },
@@ -19,9 +20,11 @@
     "@prisma/client": "^7.9.1",
     "@types/express": "^5.0.6",
     "axios": "^1.19.0",
+    "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "pg": "^8.23.0",
+    "uuid": "^14.0.2",
     "zod": "^4.4.3"
   }
 }
